@@ -1,4 +1,4 @@
-import * as React from "react";
+import { FC, useState } from "react";
 import { Calculator, Info } from "lucide-react";
 import type { PaymentCalculation } from "../types/payment";
 import { paymentApi } from "../api/paymentApi";
@@ -27,7 +27,7 @@ interface PaymentSummaryProps {
   showDetails?: boolean;
 }
 
-const PaymentSummary: React.FC<PaymentSummaryProps> = ({
+const PaymentSummary: FC<PaymentSummaryProps> = ({
   preview,
   equipment,
   compact = false,
@@ -35,7 +35,7 @@ const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   accentColorLight = "from-blue-100 to-blue-200",
   showDetails = true,
 }) => {
-  const [showBreakdown, setShowBreakdown] = React.useState(false);
+  const [showBreakdown, setShowBreakdown] = useState(false);
 
   const formatCurrency = (amount: number) => paymentApi.formatCurrency(amount);
   const formatPercentage = (rate: number) => paymentApi.formatPercentage(rate);

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { FC, ElementType, createElement } from "react";
 import { useState } from "react";
 import {
   ArrowLeft,
@@ -68,7 +68,7 @@ const WarrantyLookupPage = ({
     isActive: boolean,
     daysRemaining?: number,
   ): {
-    icon: React.ElementType;
+    icon: ElementType;
     color: string;
     bgColor: string;
     borderColor: string;
@@ -441,7 +441,7 @@ const WarrantyLookupPage = ({
                         <div
                           className={`${statusInfo.bgColor} ${statusInfo.borderColor} ${statusInfo.color} px-6 py-3 rounded-xl border-2 flex items-center gap-2 font-bold shadow-lg`}
                         >
-                          {React.createElement(statusInfo.icon, {
+                          {createElement(statusInfo.icon, {
                             className: "w-5 h-5",
                           })}
                           {statusInfo.text}

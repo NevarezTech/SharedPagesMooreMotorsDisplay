@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { FC, useState, useEffect, FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   X,
@@ -32,7 +32,7 @@ interface PaymentPageProps {
   accentColorDark?: string;
 }
 
-const PaymentPage: React.FC<PaymentPageProps> = ({
+const PaymentPage: FC<PaymentPageProps> = ({
   accentColor = "blue",
   accentColorLight = "from-blue-100 to-blue-200",
   accentColorDark = "text-blue-600",
@@ -140,7 +140,7 @@ const PaymentPage: React.FC<PaymentPageProps> = ({
     // For credit card, stay on method_selection to show updated pricing
   };
 
-  const handleCustomerInfoSubmit = async (e: React.FormEvent) => {
+  const handleCustomerInfoSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!selectedMethod || !equipment || !paymentPreview) return;
 

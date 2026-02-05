@@ -1,4 +1,4 @@
-import * as React from "react";
+import { FC } from "react";
 import { useState } from "react";
 import { CheckCircle, XCircle } from "lucide-react";
 import type { QuizRecommendation } from "../types/quiz";
@@ -19,7 +19,7 @@ interface EquipmentModalProps {
   accentColorLight?: string;
 }
 
-const EquipmentModal: React.FC<EquipmentModalProps> = ({
+const EquipmentModal: FC<EquipmentModalProps> = ({
   equipment,
   isOpen,
   onClose,

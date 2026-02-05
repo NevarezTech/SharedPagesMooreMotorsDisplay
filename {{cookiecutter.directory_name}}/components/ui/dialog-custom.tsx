@@ -1,45 +1,55 @@
-import React, { useState, useRef, useEffect } from "react";
+import {
+  FC,
+  ReactNode,
+  createContext,
+  useState,
+  useRef,
+  useEffect,
+  useContext,
+  isValidElement,
+  cloneElement,
+} from "react";
 import { X } from "lucide-react";
 import { cn } from "@shared/lib/utils";
 
 interface DialogProps {
-  children: React.ReactNode;
+  children: ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
 interface DialogTriggerProps {
   asChild?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
 interface DialogContentProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
 interface DialogHeaderProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
 interface DialogFooterProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
 interface DialogTitleProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
 interface DialogDescriptionProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
-const DialogContext = React.createContext<{
+const DialogContext = createContext<{
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
 }>({
@@ -47,7 +57,7 @@ const DialogContext = React.createContext<{
   setIsOpen: () => {},
 });
 
-const Dialog: React.FC<DialogProps> = ({ children, open, onOpenChange }) => {
+const Dialog: FC<DialogProps> = ({ children, open, onOpenChange }) => {
   const [internalOpen, setInternalOpen] = useState(false);
 
   // Use controlled state if provided, otherwise use internal state
@@ -67,19 +77,19 @@ const Dialog: React.FC<DialogProps> = ({ children, open, onOpenChange }) => {
   );
 };
 
-const DialogTrigger: React.FC<DialogTriggerProps> = ({
+const DialogTrigger: FC<DialogTriggerProps> = ({
   asChild = false,
   children,
   className = "",
 }) => {
-  const { setIsOpen } = React.useContext(DialogContext);
+  const { setIsOpen } = useContext(DialogContext);
 
   const handleClick = () => {
     setIsOpen(true);
   };
 
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children, {
+  if (asChild && isValidElement(children)) {
+    return cloneElement(children, {
       ...(children.props as any),
       onClick: handleClick,
     });
@@ -92,11 +102,11 @@ const DialogTrigger: React.FC<DialogTriggerProps> = ({
   );
 };
 
-const DialogContent: React.FC<DialogContentProps> = ({
+const DialogContent: FC<DialogContentProps> = ({
   children,
   className = "",
 }) => {
-  const { isOpen, setIsOpen } = React.useContext(DialogContext);
+  const { isOpen, setIsOpen } = useContext(DialogContext);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -156,10 +166,7 @@ const DialogContent: React.FC<DialogContentProps> = ({
   );
 };
 
-const DialogHeader: React.FC<DialogHeaderProps> = ({
-  children,
-  className = "",
-}) => (
+const DialogHeader: FC<DialogHeaderProps> = ({ children, className = "" }) => (
   <div
     className={cn(
       "flex flex-col space-y-1.5 text-center sm:text-left",
@@ -170,10 +177,7 @@ const DialogHeader: React.FC<DialogHeaderProps> = ({
   </div>
 );
 
-const DialogFooter: React.FC<DialogFooterProps> = ({
-  children,
-  className = "",
-}) => (
+const DialogFooter: FC<DialogFooterProps> = ({ children, className = "" }) => (
   <div
     className={cn(
       "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
@@ -184,10 +188,7 @@ const DialogFooter: React.FC<DialogFooterProps> = ({
   </div>
 );
 
-const DialogTitle: React.FC<DialogTitleProps> = ({
-  children,
-  className = "",
-}) => (
+const DialogTitle: FC<DialogTitleProps> = ({ children, className = "" }) => (
   <h3
     className={cn(
       "text-lg font-semibold leading-none tracking-tight",
@@ -198,7 +199,7 @@ const DialogTitle: React.FC<DialogTitleProps> = ({
   </h3>
 );
 
-const DialogDescription: React.FC<DialogDescriptionProps> = ({
+const DialogDescription: FC<DialogDescriptionProps> = ({
   children,
   className = "",
 }) => <p className={cn("text-sm text-gray-500", className)}>{children}</p>;

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { FC, ReactNode } from "react";
 import { CheckCircle, Circle } from "lucide-react";
 
 interface QuestionCardProps {
@@ -10,10 +10,10 @@ interface QuestionCardProps {
   accentColor?: string;
   accentColorLight?: string;
   accentColorBorder?: string;
-  customInput?: React.ReactNode;
+  customInput?: ReactNode;
 }
 
-const QuestionCard: React.FC<QuestionCardProps> = ({
+const QuestionCard: FC<QuestionCardProps> = ({
   question,
   options,
   selectedValue,

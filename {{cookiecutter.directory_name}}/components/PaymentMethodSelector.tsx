@@ -1,4 +1,4 @@
-import * as React from "react";
+import { FC, useEffect } from "react";
 import { CreditCard, CheckCircle } from "lucide-react";
 import type { PaymentMethod, PaymentMethodSelection } from "../types/payment";
 import { PAYMENT_METHODS } from "../types/payment";
@@ -11,7 +11,7 @@ interface PaymentMethodSelectorProps {
   compact?: boolean;
 }
 
-const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
+const PaymentMethodSelector: FC<PaymentMethodSelectorProps> = ({
   selectedMethod,
   onMethodSelect,
   accentColor = "blue",
@@ -19,7 +19,7 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
   compact = false,
 }) => {
   // Auto-select credit card since it's the only option
-  React.useEffect(() => {
+  useEffect(() => {
     if (!selectedMethod && PAYMENT_METHODS.length === 1) {
       onMethodSelect(PAYMENT_METHODS[0].method);
     }

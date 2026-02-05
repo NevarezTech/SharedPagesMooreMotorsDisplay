@@ -1,4 +1,4 @@
-import * as React from "react";
+import { FC, FormEvent } from "react";
 import { useState, useEffect } from "react";
 import {
   X,
@@ -35,7 +35,7 @@ interface CustomerInfo {
   email: string;
 }
 
-const PaymentModal: React.FC<PaymentModalProps> = ({
+const PaymentModal: FC<PaymentModalProps> = ({
   equipment,
   isOpen,
   onClose,
@@ -138,7 +138,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     // For credit card, stay on method_selection to show updated pricing
   };
 
-  const handleCustomerInfoSubmit = async (e: React.FormEvent) => {
+  const handleCustomerInfoSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!selectedMethod || !equipment || !paymentPreview) return;
 

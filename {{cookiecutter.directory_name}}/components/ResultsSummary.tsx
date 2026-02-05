@@ -1,4 +1,4 @@
-import * as React from "react";
+import { FC } from "react";
 import { CheckCircle } from "lucide-react";
 
 interface ResultsSummaryProps {
@@ -8,7 +8,7 @@ interface ResultsSummaryProps {
   accentColor?: string;
 }
 
-const ResultsSummary: React.FC<ResultsSummaryProps> = ({
+const ResultsSummary: FC<ResultsSummaryProps> = ({
   answers,
   brandName,
   hasResults,

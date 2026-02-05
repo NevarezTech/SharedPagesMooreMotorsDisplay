@@ -1,4 +1,4 @@
-import * as React from "react";
+import { FC, SyntheticEvent } from "react";
 import { CheckCircle, XCircle } from "lucide-react";
 import type { QuizRecommendation } from "../types/quiz";
 
@@ -10,7 +10,7 @@ interface EquipmentCardProps {
   accentColorDark?: string;
 }
 
-const EquipmentCard: React.FC<EquipmentCardProps> = ({
+const EquipmentCard: FC<EquipmentCardProps> = ({
   equipment,
   onClick,
   accentColor = "text-green-600",
@@ -40,7 +40,7 @@ const EquipmentCard: React.FC<EquipmentCardProps> = ({
             src={equipment.image_url}
             alt={equipment.model}
             className="w-full h-full object-cover"
-            onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+            onError={(e: SyntheticEvent<HTMLImageElement, Event>) => {
               const target = e.currentTarget;
               target.style.display = "none";
               if (target.parentElement) {
