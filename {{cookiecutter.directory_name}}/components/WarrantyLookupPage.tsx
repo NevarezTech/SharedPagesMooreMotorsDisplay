@@ -299,9 +299,9 @@ const WarrantyLookupPage = ({
   return (
     <div
       className="min-h-screen text-gray-900 p-8"
-      style={{
+      style={{'{{' }}
         backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`,
-      }}
+      {{ '}}'}}
     >
       {/* Header */}
       <div className="max-w-6xl mx-auto mb-8">
