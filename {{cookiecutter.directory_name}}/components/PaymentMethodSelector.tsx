@@ -1,6 +1,6 @@
-import { FC, useEffect } from "react";
+import * as React from "react";
 import { CreditCard, CheckCircle } from "lucide-react";
-import type { PaymentMethod, PaymentMethodSelection } from "../types/payment";
+import type { PaymentMethod } from "../types/payment";
 import { PAYMENT_METHODS } from "../types/payment";
 
 interface PaymentMethodSelectorProps {
@@ -11,43 +11,18 @@ interface PaymentMethodSelectorProps {
   compact?: boolean;
 }
 
-const PaymentMethodSelector: FC<PaymentMethodSelectorProps> = ({
+const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
   selectedMethod,
   onMethodSelect,
   accentColor = "blue",
   accentColorLight = "from-blue-100 to-blue-200",
-  compact = false,
 }) => {
   // Auto-select credit card since it's the only option
-  useEffect(() => {
+  React.useEffect(() => {
     if (!selectedMethod && PAYMENT_METHODS.length === 1) {
       onMethodSelect(PAYMENT_METHODS[0].method);
     }
   }, [selectedMethod, onMethodSelect]);
-
-  const getColorClasses = (isSelected: boolean, available: boolean) => {
-    if (!available) {
-      return "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed";
-    }
-
-    if (isSelected) {
-      return `bg-gradient-to-br ${accentColorLight} border-${accentColor}-300 text-${accentColor}-800 border-2`;
-    }
-
-    return "bg-white border-gray-200 text-gray-700 hover:border-gray-300 hover:shadow-md border cursor-pointer";
-  };
-
-  const getIconColorClass = (isSelected: boolean, available: boolean) => {
-    if (!available) {
-      return "text-gray-400";
-    }
-
-    if (isSelected) {
-      return `text-${accentColor}-600`;
-    }
-
-    return "text-gray-500";
-  };
 
   return (
     <div className="space-y-4">

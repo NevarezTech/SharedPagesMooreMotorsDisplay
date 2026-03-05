@@ -1,4 +1,4 @@
-import { FC } from "react";
+import * as React from "react";
 import { Loader2, XCircle } from "lucide-react";
 
 interface LoadingStateProps {
@@ -13,7 +13,7 @@ interface LoadingStateProps {
   buttonHoverColor?: string;
 }
 
-const LoadingState: FC<LoadingStateProps> = ({
+const LoadingState: React.FC<LoadingStateProps> = ({
   isLoading,
   error,
   onRetry,

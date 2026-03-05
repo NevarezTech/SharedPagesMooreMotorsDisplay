@@ -151,8 +151,23 @@ export const useQuizLogic = ({ brand }: UseQuizLogicProps) => {
           ? customLandSize
           : answers["land-size"];
 
+      // Normalize mower type from user-friendly format to backend format
+      const normalizeMowerType = (mowerType: string): string => {
+        const mapping: Record<string, string> = {
+          "Zero Turn": "zero-turn",
+          "Push Mower": "push",
+          "Stand On Mower": "stand-on",
+          "Self Propelled": "self-propelled",
+          "Riding Mower": "riding",
+        };
+        return mapping[mowerType] || mowerType.toLowerCase();
+      };
+
       const quizAnswers: QuizAnswers = {
         service_type: answers["service-type"] as ServiceType,
+        mower_type: answers["mower-type"]
+          ? normalizeMowerType(answers["mower-type"])
+          : undefined,
         land_size: landSize,
         brand: brand,
       };

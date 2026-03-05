@@ -1,4 +1,4 @@
-import { FC, ChangeEvent } from "react";
+import * as React from "react";
 
 interface CustomLandSizeInputProps {
   value: string;
@@ -6,7 +6,7 @@ interface CustomLandSizeInputProps {
   error?: string;
 }
 
-const CustomLandSizeInput: FC<CustomLandSizeInputProps> = ({
+const CustomLandSizeInput: React.FC<CustomLandSizeInputProps> = ({
   value,
   onChange,
   error,
@@ -19,7 +19,7 @@ const CustomLandSizeInput: FC<CustomLandSizeInputProps> = ({
       <input
         type="text"
         value={value}
-        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           onChange(e.target.value)
         }
         placeholder="Enter acreage (e.g., 5 acres)"

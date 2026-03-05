@@ -1,14 +1,12 @@
-import { FC, useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   X,
   ArrowLeft,
   Loader2,
   CreditCard,
-  CheckCircle,
-  MapPin,
-  Phone,
   AlertCircle,
+  CheckCircle,
 } from "lucide-react";
 import type { QuizRecommendation } from "../types/quiz";
 import type { PaymentMethod, PaymentPreviewResponse } from "../types/payment";
@@ -29,13 +27,11 @@ interface CustomerInfo {
 interface PaymentPageProps {
   accentColor?: string;
   accentColorLight?: string;
-  accentColorDark?: string;
 }
 
-const PaymentPage: FC<PaymentPageProps> = ({
+const PaymentPage: React.FC<PaymentPageProps> = ({
   accentColor = "blue",
   accentColorLight = "from-blue-100 to-blue-200",
-  accentColorDark = "text-blue-600",
 }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -140,7 +136,7 @@ const PaymentPage: FC<PaymentPageProps> = ({
     // For credit card, stay on method_selection to show updated pricing
   };
 
-  const handleCustomerInfoSubmit = async (e: FormEvent) => {
+  const handleCustomerInfoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedMethod || !equipment || !paymentPreview) return;
 

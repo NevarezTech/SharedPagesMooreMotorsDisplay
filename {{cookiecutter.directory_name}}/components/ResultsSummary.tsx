@@ -1,4 +1,4 @@
-import { FC } from "react";
+import * as React from "react";
 import { CheckCircle } from "lucide-react";
 
 interface ResultsSummaryProps {
@@ -8,7 +8,7 @@ interface ResultsSummaryProps {
   accentColor?: string;
 }
 
-const ResultsSummary: FC<ResultsSummaryProps> = ({
+const ResultsSummary: React.FC<ResultsSummaryProps> = ({
   answers,
   brandName,
   hasResults,
@@ -38,6 +38,14 @@ const ResultsSummary: FC<ResultsSummaryProps> = ({
               {answers["service-type"] || "Not specified"}
             </span>
           </div>
+          {answers["mower-type"] && (
+            <div className="flex justify-between">
+              <span className="text-gray-600">Mower Type:</span>
+              <span className={`font-medium ${accentColor}`}>
+                {answers["mower-type"]}
+              </span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="text-gray-600">Land Size:</span>
             <span className={`font-medium ${accentColor}`}>

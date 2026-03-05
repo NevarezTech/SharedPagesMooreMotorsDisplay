@@ -1,59 +1,40 @@
-import { X, CheckCircle, XCircle, ShoppingCart } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import * as React from "react";
+import { useState } from "react";
+import { CheckCircle, XCircle } from "lucide-react";
 import type { QuizRecommendation } from "../types/quiz";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog-custom";
+
+type TabType = "overview" | "specifications" | "features" | "pricing";
 
 interface EquipmentModalProps {
-  equipment: QuizRecommendation;
+  equipment: QuizRecommendation | null;
   isOpen: boolean;
   onClose: () => void;
   accentColor?: string;
   accentColorLight?: string;
-  accentColorDark?: string;
 }
 
-type TabType = "overview" | "specifications" | "features" | "pricing";
-
-const EquipmentModal = ({
+const EquipmentModal: React.FC<EquipmentModalProps> = ({
   equipment,
   isOpen,
   onClose,
   accentColor = "green",
   accentColorLight = "from-green-100 to-green-200",
-  accentColorDark = "text-green-600",
-}: EquipmentModalProps) => {
+}) => {
   const [activeTab, setActiveTab] = useState<TabType>("overview");
-  const navigate = useNavigate();
-
-  // Prevent body scrolling when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-
-    // Cleanup function to restore scroll when component unmounts
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
-
-  if (!isOpen) return null;
 
   const getConditionColor = (condition: string) => {
-    switch (condition.toLowerCase()) {
-      case "new":
-        return "bg-green-100 text-green-800";
-      case "used - excellent":
-        return "bg-blue-100 text-blue-800";
-      case "used - good":
-        return "bg-yellow-100 text-yellow-800";
-      case "used - fair":
-        return "bg-orange-100 text-orange-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
+    const lowerCondition = condition.toLowerCase();
+    if (lowerCondition === "new") return "bg-green-100 text-green-800";
+    if (lowerCondition === "used" || lowerCondition === "good")
+      return "bg-blue-100 text-blue-800";
+    if (lowerCondition === "fair") return "bg-yellow-100 text-yellow-800";
+    return "bg-gray-100 text-gray-800";
   };
 
   const tabs: { id: TabType; label: string }[] = [
@@ -63,319 +44,735 @@ const EquipmentModal = ({
     { id: "pricing", label: "Pricing & Availability" },
   ];
 
-  const handleBuyNow = () => {
-    const equipmentData = encodeURIComponent(JSON.stringify(equipment));
-    navigate(`/payment?equipment=${equipmentData}&quantity=1`);
-  };
-
-  const getButtonClasses = () => {
-    const baseClasses =
-      "flex-1 text-white px-8 py-3 rounded-xl font-semibold text-lg transition-colors duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2";
-    const colorClasses =
-      accentColor === "green"
-        ? "bg-green-600 hover:bg-green-700"
-        : "bg-blue-600 hover:bg-blue-700";
-    return `${baseClasses} ${colorClasses}`;
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm overflow-hidden">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden flex flex-col relative">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-6 flex justify-between items-start">
-          <div className="flex-1">
-            <h2 className="text-3xl font-bold mb-2">
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      {equipment && (
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-3xl font-bold">
               {equipment.brand} {equipment.model}
-            </h2>
+              {equipment.series && (
+                <span className="text-xl font-normal text-gray-600 ml-2">
+                  ({equipment.series})
+                </span>
+              )}
+            </DialogTitle>
             {equipment.year > 0 && (
-              <p className="text-green-100 text-lg">Year: {equipment.year}</p>
+              <p className="text-gray-600 text-lg">Year: {equipment.year}</p>
             )}
-          </div>
-          <button
-            onClick={onClose}
-            className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-colors duration-200"
-            aria-label="Close modal"
-          >
-            <X size={28} />
-          </button>
-        </div>
+          </DialogHeader>
 
-        {/* Tabs */}
-        <div className="border-b border-gray-200 bg-gray-50">
-          <div className="flex overflow-x-auto">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`
-                  px-6 py-4 text-sm font-semibold whitespace-nowrap transition-colors duration-200
-                  ${
+          {/* Tabs */}
+          <div className="border-b border-gray-200 -mx-6 px-6">
+            <div className="flex space-x-1">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`py-3 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                     activeTab === tab.id
-                      ? "text-green-600 border-b-2 border-green-600 bg-white"
-                      : "text-gray-600 hover:text-green-600 hover:bg-gray-100"
-                  }
-                `}
-              >
-                {tab.label}
-              </button>
-            ))}
+                      ? `border-${accentColor}-600 text-${accentColor}-600`
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {activeTab === "overview" && (
-            <div className="space-y-6">
-              {/* Image */}
-              <div className="h-64 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center overflow-hidden">
-                {equipment.image_url ? (
-                  <img
-                    src={equipment.image_url}
-                    alt={equipment.model}
-                    className="w-full h-full object-contain"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
-                ) : (
-                  <div className="text-8xl text-green-600">🚜</div>
-                )}
-              </div>
+          <div className="space-y-6">
+            {/* Overview Tab */}
+            {activeTab === "overview" && (
+              <>
+                {/* Image */}
+                <div
+                  className={`w-full h-64 bg-gradient-to-br ${accentColorLight} rounded-lg flex items-center justify-center overflow-hidden`}
+                >
+                  {equipment.image_url ? (
+                    <img
+                      src={equipment.image_url}
+                      alt={equipment.model}
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <div className="text-8xl">🚜</div>
+                  )}
+                </div>
 
-              {/* Quick Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-gray-50 rounded-lg p-4 text-center">
-                  <div className="text-gray-500 text-sm mb-1">Status</div>
-                  <div className="flex items-center justify-center space-x-2">
+                {/* Status and Condition */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
                     {equipment.is_available ? (
                       <>
-                        <CheckCircle className="text-green-500" size={20} />
-                        <span className="text-green-600 font-semibold">
+                        <CheckCircle
+                          className={`text-${accentColor}-500`}
+                          size={24}
+                        />
+                        <span
+                          className={`text-${accentColor}-600 font-semibold`}
+                        >
                           Available
                         </span>
                       </>
                     ) : (
                       <>
-                        <XCircle className="text-red-500" size={20} />
+                        <XCircle className="text-red-500" size={24} />
                         <span className="text-red-600 font-semibold">
-                          Out of Stock
+                          Not Available
                         </span>
                       </>
                     )}
                   </div>
-                </div>
-
-                <div className="bg-gray-50 rounded-lg p-4 text-center">
-                  <div className="text-gray-500 text-sm mb-1">Condition</div>
-                  <div>
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-semibold capitalize ${getConditionColor(equipment.condition)}`}
-                    >
-                      {equipment.condition}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 rounded-lg p-4 text-center">
-                  <div className="text-gray-500 text-sm mb-1">Price</div>
-                  <div className="text-2xl font-bold text-green-600">
-                    ${equipment.price.toLocaleString()}
-                  </div>
-                </div>
-
-                {equipment.show_public_quantity && (
-                  <div className="bg-gray-50 rounded-lg p-4 text-center">
-                    <div className="text-gray-500 text-sm mb-1">In Stock</div>
-                    <div className="text-2xl font-bold text-gray-800">
-                      {equipment.quantity}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Description */}
-              <div>
-                <h3 className="text-xl font-bold text-gray-800 mb-3">
-                  Description
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  {equipment.description ||
-                    "Contact us for more details about this equipment."}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "specifications" && (
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                Technical Specifications
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="text-sm text-gray-500 mb-1">Brand</div>
-                  <div className="text-lg font-semibold text-gray-800 capitalize">
-                    {equipment.brand}
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="text-sm text-gray-500 mb-1">Model</div>
-                  <div className="text-lg font-semibold text-gray-800">
-                    {equipment.model}
-                  </div>
-                </div>
-
-                {equipment.year > 0 && (
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-sm text-gray-500 mb-1">Year</div>
-                    <div className="text-lg font-semibold text-gray-800">
-                      {equipment.year}
-                    </div>
-                  </div>
-                )}
-
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="text-sm text-gray-500 mb-1">Condition</div>
-                  <div className="text-lg font-semibold text-gray-800 capitalize">
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${getConditionColor(
+                      equipment.condition,
+                    )}`}
+                  >
                     {equipment.condition}
-                  </div>
+                  </span>
                 </div>
-              </div>
 
-              {/* Additional specs could be added here if available in the data */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-                <p className="text-blue-800 text-sm">
-                  <strong>Note:</strong> For detailed technical specifications
-                  including engine size, cutting width, fuel type, and other
-                  features, please contact our sales team.
-                </p>
-              </div>
-            </div>
-          )}
+                {/* Description */}
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-3">
+                    Description
+                  </h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    {equipment.description ||
+                      "Contact us for more details about this equipment."}
+                  </p>
+                </div>
+              </>
+            )}
 
-          {activeTab === "features" && (
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                Features & Highlights
-              </h3>
-
-              <p className="text-gray-600">
-                {equipment.description ||
-                  "Contact us for detailed features and specifications."}
-              </p>
-
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-6">
-                <h4 className="text-green-800 font-semibold mb-2">
-                  Want to Know More?
-                </h4>
-                <p className="text-green-700 text-sm">
-                  Our knowledgeable sales team can provide detailed information
-                  about all features, accessories, and customization options
-                  available for this equipment.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "pricing" && (
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                Pricing & Availability
-              </h3>
-
-              {/* Price Card */}
-              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border-2 border-green-300">
-                <div className="flex justify-between items-center mb-4">
-                  <div>
-                    <div className="text-gray-600 text-sm mb-1">Price</div>
-                    <div className="text-4xl font-bold text-green-600">
-                      ${equipment.price.toLocaleString()}
+            {/* Specifications Tab */}
+            {activeTab === "specifications" && (
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">
+                  Technical Specifications
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="text-sm text-gray-500 mb-2">Brand</div>
+                    <div className="text-lg font-semibold text-gray-800">
+                      {equipment.brand}
                     </div>
                   </div>
-                  <div className="text-right">
-                    {equipment.is_available ? (
-                      <div className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
-                        ✓ Available
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="text-sm text-gray-500 mb-2">Model</div>
+                    <div className="text-lg font-semibold text-gray-800">
+                      {equipment.model}
+                    </div>
+                  </div>
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="text-sm text-gray-500 mb-2">Year</div>
+                    <div className="text-lg font-semibold text-gray-800">
+                      {equipment.year > 0
+                        ? equipment.year
+                        : "Contact for details"}
+                    </div>
+                  </div>
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="text-sm text-gray-500 mb-2">Condition</div>
+                    <div className="text-lg font-semibold text-gray-800 capitalize">
+                      {equipment.condition}
+                    </div>
+                  </div>
+                  {equipment.type && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-2">Type</div>
+                      <div className="text-lg font-semibold text-gray-800 capitalize">
+                        {equipment.type.replace("-", " ")}
                       </div>
-                    ) : (
-                      <div className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold">
-                        Out of Stock
+                    </div>
+                  )}
+                  {equipment.fuel_type && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-2">
+                        Fuel Type
                       </div>
-                    )}
-                    {equipment.show_public_quantity &&
-                      equipment.is_available && (
-                        <div className="text-sm text-gray-600 mt-2">
-                          {equipment.quantity} unit
-                          {equipment.quantity !== 1 ? "s" : ""} available
+                      <div className="text-lg font-semibold text-gray-800 capitalize">
+                        {equipment.fuel_type}
+                      </div>
+                    </div>
+                  )}
+                  {equipment.cutting_width && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-2">
+                        Cutting Width
+                      </div>
+                      <div className="text-lg font-semibold text-gray-800">
+                        {equipment.cutting_width}
+                      </div>
+                    </div>
+                  )}
+                  {equipment.engine_size && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-2">
+                        Engine Size
+                      </div>
+                      <div className="text-lg font-semibold text-gray-800">
+                        {equipment.engine_size}
+                      </div>
+                    </div>
+                  )}
+                  {equipment.weight && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-2">Weight</div>
+                      <div className="text-lg font-semibold text-gray-800">
+                        {equipment.weight}
+                      </div>
+                    </div>
+                  )}
+                  {equipment.deck_material && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-2">
+                        Deck Material
+                      </div>
+                      <div className="text-lg font-semibold text-gray-800">
+                        {equipment.deck_material}
+                      </div>
+                    </div>
+                  )}
+                  {equipment.transmission && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-2">
+                        Transmission
+                      </div>
+                      <div className="text-lg font-semibold text-gray-800">
+                        {equipment.transmission}
+                      </div>
+                    </div>
+                  )}
+                  {equipment.turning_radius && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-2">
+                        Turning Radius
+                      </div>
+                      <div className="text-lg font-semibold text-gray-800">
+                        {equipment.turning_radius}
+                      </div>
+                    </div>
+                  )}
+                  {equipment.hours_per_acre && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-2">
+                        Estimated Time
+                      </div>
+                      <div className="text-lg font-semibold text-gray-800">
+                        {equipment.hours_per_acre} hrs/acre
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Performance Specifications */}
+                {(equipment.fuel_capacity ||
+                  equipment.speed ||
+                  equipment.cutting_height_range ||
+                  equipment.coverage_in_acres ||
+                  equipment.acres_per_hour) && (
+                  <>
+                    <h3 className="text-xl font-bold text-gray-800 mb-4 mt-6">
+                      Performance Specifications
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {equipment.fuel_capacity && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Fuel Capacity
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.fuel_capacity}
+                          </div>
                         </div>
                       )}
+                      {equipment.speed && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Speed
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.speed}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.cutting_height_range && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Cutting Height Range
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.cutting_height_range}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.coverage_in_acres && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Coverage
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.coverage_in_acres}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.acres_per_hour && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Acres Per Hour
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.acres_per_hour}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Engine Specifications */}
+                {(equipment.engine_brand ||
+                  equipment.engine_hp ||
+                  equipment.starter_type) && (
+                  <>
+                    <h3 className="text-xl font-bold text-gray-800 mb-4 mt-6">
+                      Engine Specifications
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {equipment.engine_brand && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Engine Brand
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.engine_brand}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.engine_hp && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Engine HP
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.engine_hp}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.starter_type && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Starter Type
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.starter_type}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Deck Specifications */}
+                {(equipment.deck_size ||
+                  equipment.deck_type ||
+                  equipment.discharge_type ||
+                  equipment.blade_tip_speed ||
+                  equipment.number_of_blades) && (
+                  <>
+                    <h3 className="text-xl font-bold text-gray-800 mb-4 mt-6">
+                      Deck Specifications
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {equipment.deck_size && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Deck Size
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.deck_size}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.deck_type && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Deck Type
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.deck_type}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.discharge_type && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Discharge Type
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.discharge_type}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.blade_tip_speed && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Blade Tip Speed
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.blade_tip_speed}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.number_of_blades && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Number of Blades
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.number_of_blades}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Drive System & Tires */}
+                {(equipment.drive_system ||
+                  equipment.tire_type_front ||
+                  equipment.tire_type_rear) && (
+                  <>
+                    <h3 className="text-xl font-bold text-gray-800 mb-4 mt-6">
+                      Drive System & Tires
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {equipment.drive_system && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Drive System
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.drive_system}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.tire_type_front && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Front Tires
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.tire_type_front}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.tire_type_rear && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Rear Tires
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.tire_type_rear}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Dimensions */}
+                {(equipment.dimensions_length ||
+                  equipment.dimensions_width ||
+                  equipment.dimensions_height) && (
+                  <>
+                    <h3 className="text-xl font-bold text-gray-800 mb-4 mt-6">
+                      Dimensions
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {equipment.dimensions_length && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Length
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.dimensions_length}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.dimensions_width && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Width
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.dimensions_width}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.dimensions_height && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Height
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.dimensions_height}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Additional Features */}
+                {(equipment.seat_type ||
+                  equipment.parking_brake ||
+                  equipment.hour_meter) && (
+                  <>
+                    <h3 className="text-xl font-bold text-gray-800 mb-4 mt-6">
+                      Additional Features
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {equipment.seat_type && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Seat Type
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.seat_type}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.parking_brake && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Parking Brake
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.parking_brake}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.hour_meter && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Hour Meter
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.hour_meter}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {/* Warranty Information */}
+                {(equipment.warranty ||
+                  equipment.warranty_period_months ||
+                  equipment.warranty_coverage) && (
+                  <>
+                    <h3 className="text-xl font-bold text-gray-800 mb-4 mt-6">
+                      Warranty Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {equipment.warranty && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Warranty
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.warranty}
+                          </div>
+                        </div>
+                      )}
+                      {equipment.warranty_period_months && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Warranty Period
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.warranty_period_months} months
+                          </div>
+                        </div>
+                      )}
+                      {equipment.warranty_coverage && (
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 md:col-span-2">
+                          <div className="text-sm text-gray-500 mb-2">
+                            Coverage Details
+                          </div>
+                          <div className="text-lg font-semibold text-gray-800">
+                            {equipment.warranty_coverage}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Features Tab */}
+            {activeTab === "features" && (
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">
+                  Features & Highlights
+                </h3>
+
+                {equipment.features ? (
+                  <div className="space-y-3">
+                    {(() => {
+                      try {
+                        const featuresList = JSON.parse(equipment.features);
+                        return Array.isArray(featuresList) &&
+                          featuresList.length > 0 ? (
+                          featuresList.map((feature: string, index: number) => (
+                            <div
+                              key={index}
+                              className="flex items-start space-x-3 bg-white border border-gray-200 rounded-lg p-4"
+                            >
+                              <CheckCircle
+                                className={`text-${accentColor}-600 flex-shrink-0 mt-0.5`}
+                                size={20}
+                              />
+                              <span className="text-gray-800">{feature}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-gray-700 leading-relaxed">
+                            {equipment.description ||
+                              "Contact us for detailed features and specifications."}
+                          </p>
+                        );
+                      } catch {
+                        return (
+                          <p className="text-gray-700 leading-relaxed">
+                            {equipment.features ||
+                              equipment.description ||
+                              "Contact us for detailed features and specifications."}
+                          </p>
+                        );
+                      }
+                    })()}
                   </div>
+                ) : (
+                  <p className="text-gray-700 leading-relaxed">
+                    {equipment.description ||
+                      "Contact us for detailed features and specifications."}
+                  </p>
+                )}
+
+                <div
+                  className={`bg-${accentColor}-50 border border-${accentColor}-200 rounded-lg p-4 mt-6`}
+                >
+                  <h4 className={`text-${accentColor}-800 font-semibold mb-2`}>
+                    Need More Information?
+                  </h4>
+                  <p className={`text-${accentColor}-700 text-sm`}>
+                    Contact our sales team for a complete list of features,
+                    specifications, and available options.
+                  </p>
                 </div>
               </div>
+            )}
 
-              {/* Additional Info */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white border border-gray-200 rounded-lg p-4">
-                  <div className="text-sm text-gray-500 mb-2">
-                    Equipment Type
-                  </div>
-                  <div className="text-lg font-semibold text-gray-800 capitalize">
-                    {equipment.brand} Equipment
+            {/* Pricing Tab */}
+            {activeTab === "pricing" && (
+              <>
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">
+                    Pricing & Availability
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600 text-lg">Price:</span>
+                      <span
+                        className={`text-3xl font-bold text-${accentColor}-600`}
+                      >
+                        ${equipment.price.toFixed(2)}
+                      </span>
+                    </div>
+                    {equipment.is_available &&
+                      equipment.show_public_quantity && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600 text-lg">
+                            In Stock:
+                          </span>
+                          <span className="text-xl font-semibold text-gray-800">
+                            {equipment.quantity}{" "}
+                            {equipment.quantity === 1 ? "unit" : "units"}
+                          </span>
+                        </div>
+                      )}
+                    <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                      <span className="text-gray-600 text-lg">Status:</span>
+                      <div className="flex items-center gap-2">
+                        {equipment.is_available ? (
+                          <>
+                            <CheckCircle
+                              className={`text-${accentColor}-500`}
+                              size={20}
+                            />
+                            <span
+                              className={`text-${accentColor}-600 font-semibold`}
+                            >
+                              Available Now
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <XCircle className="text-red-500" size={20} />
+                            <span className="text-red-600 font-semibold">
+                              Currently Unavailable
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="bg-white border border-gray-200 rounded-lg p-4">
-                  <div className="text-sm text-gray-500 mb-2">Year</div>
-                  <div className="text-lg font-semibold text-gray-800">
-                    {equipment.year > 0
-                      ? equipment.year
-                      : "Contact for details"}
+                {/* Call to Action */}
+                <div
+                  className={`bg-${accentColor}-50 border border-${accentColor}-200 rounded-lg p-6`}
+                >
+                  <h4
+                    className={`text-${accentColor}-800 font-semibold mb-2 text-lg`}
+                  >
+                    Interested in this equipment?
+                  </h4>
+                  <p className={`text-${accentColor}-700 mb-4`}>
+                    Contact our sales team for more information or to schedule a
+                    see in person.
+                  </p>
+                  <div className="flex gap-3">
+                    <button
+                      className={`bg-${accentColor}-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-${accentColor}-700 transition-colors`}
+                    >
+                      Contact Sales
+                    </button>
+                    <button
+                      className={`bg-white text-${accentColor}-600 border-2 border-${accentColor}-600 px-6 py-3 rounded-lg font-semibold hover:bg-${accentColor}-50 transition-colors`}
+                    >
+                      Request Quote
+                    </button>
                   </div>
                 </div>
-              </div>
-
-              {/* Warranty Info */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-5">
-                <h4 className="text-green-900 font-semibold mb-2 text-lg">
-                  🛡️ Warranty & Service
-                </h4>
-                <p className="text-green-800 text-sm">
-                  All equipment comes with manufacturer warranty and our
-                  dedicated service team is here to support you.
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="border-t border-gray-200 bg-gray-50 p-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
-          <div className="text-center sm:text-left">
-            <p className="text-gray-600 text-sm">
-              Questions about this equipment?
-            </p>
-            <p className="text-gray-800 font-semibold">
-              Contact our sales team for assistance
-            </p>
+              </>
+            )}
           </div>
-          <div className="flex space-x-4">
-            <button onClick={handleBuyNow} className={getButtonClasses()}>
-              <ShoppingCart size={20} />
-              <span>Buy Now</span>
-            </button>
-            <button
-              onClick={onClose}
-              className="flex-1 bg-gray-700 hover:bg-gray-800 text-white px-8 py-3 rounded-xl font-semibold text-lg transition-colors duration-200 shadow-lg hover:shadow-xl border border-gray-600"
-            >
-              Contact Sales Team
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+        </DialogContent>
+      )}
+    </Dialog>
   );
 };
 
+export { EquipmentModal };
 export default EquipmentModal;

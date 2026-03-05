@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react";
+import * as React from "react";
 import { CheckCircle, Circle } from "lucide-react";
 
 interface QuestionCardProps {
@@ -10,10 +10,11 @@ interface QuestionCardProps {
   accentColor?: string;
   accentColorLight?: string;
   accentColorBorder?: string;
-  customInput?: ReactNode;
+  customInput?: React.ReactNode;
+  optionInfo?: Record<string, React.ReactNode>;
 }
 
-const QuestionCard: FC<QuestionCardProps> = ({
+const QuestionCard: React.FC<QuestionCardProps> = ({
   question,
   options,
   selectedValue,
@@ -23,6 +24,7 @@ const QuestionCard: FC<QuestionCardProps> = ({
   accentColorLight = "bg-green-50",
   accentColorBorder = "border-green-500",
   customInput,
+  optionInfo,
 }) => {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
@@ -51,7 +53,10 @@ const QuestionCard: FC<QuestionCardProps> = ({
             ) : (
               <Circle className="text-gray-400" size={24} />
             )}
-            <span className="text-lg font-medium text-gray-800">{option}</span>
+            <span className="text-lg font-medium text-gray-800 flex-1">
+              {option}
+            </span>
+            {optionInfo && optionInfo[option]}
           </button>
         ))}
 

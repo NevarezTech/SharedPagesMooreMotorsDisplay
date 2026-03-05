@@ -1,12 +1,10 @@
-import { FC, FormEvent } from "react";
+import * as React from "react";
 import { useState, useEffect } from "react";
 import {
   X,
   ArrowLeft,
   Loader2,
   CreditCard,
-  MapPin,
-  Phone,
   AlertCircle,
   CheckCircle,
 } from "lucide-react";
@@ -21,7 +19,6 @@ interface PaymentModalProps {
   onClose: () => void;
   accentColor?: string;
   accentColorLight?: string;
-  accentColorDark?: string;
 }
 
 type PaymentStep =
@@ -35,13 +32,12 @@ interface CustomerInfo {
   email: string;
 }
 
-const PaymentModal: FC<PaymentModalProps> = ({
+const PaymentModal: React.FC<PaymentModalProps> = ({
   equipment,
   isOpen,
   onClose,
   accentColor = "blue",
   accentColorLight = "from-blue-100 to-blue-200",
-  accentColorDark = "text-blue-600",
 }) => {
   const [currentStep, setCurrentStep] =
     useState<PaymentStep>("method_selection");
@@ -138,7 +134,7 @@ const PaymentModal: FC<PaymentModalProps> = ({
     // For credit card, stay on method_selection to show updated pricing
   };
 
-  const handleCustomerInfoSubmit = async (e: FormEvent) => {
+  const handleCustomerInfoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedMethod || !equipment || !paymentPreview) return;
 

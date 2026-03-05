@@ -6,6 +6,7 @@ export type Brand = "exmark" | "wright" | "bobcat";
 
 export interface QuizAnswers {
   service_type: ServiceType;
+  mower_type?: string;
   land_size: LandSize;
   brand: Brand;
 }
@@ -14,6 +15,7 @@ export interface QuizRecommendation {
   id: number;
   brand: string;
   model: string;
+  series?: string;
   year: number;
   price: number;
   quantity: number;
@@ -32,9 +34,49 @@ export interface QuizRecommendation {
   features?: string;
   weight?: string;
   deck_material?: string;
+  deck_size?: string;
   transmission?: string;
   turning_radius?: string;
   warranty?: string;
+
+  // Performance specifications
+  fuel_capacity?: string;
+  speed?: string;
+  cutting_height_range?: string;
+  coverage_in_acres?: string;
+  acres_per_hour?: string;
+
+  // Engine specifications
+  engine_brand?: string;
+  engine_hp?: string;
+  starter_type?: string;
+
+  // Deck specifications
+  deck_type?: string;
+  discharge_type?: string;
+  blade_tip_speed?: string;
+  number_of_blades?: string;
+
+  // Drive system specifications
+  drive_system?: string;
+
+  // Tire specifications
+  tire_type_front?: string;
+  tire_type_rear?: string;
+
+  // Dimension specifications
+  dimensions_length?: string;
+  dimensions_width?: string;
+  dimensions_height?: string;
+
+  // Additional features
+  seat_type?: string;
+  parking_brake?: string;
+  hour_meter?: string;
+
+  // Warranty fields
+  warranty_period_months?: number;
+  warranty_coverage?: string;
 }
 
 export interface QuizResponse {

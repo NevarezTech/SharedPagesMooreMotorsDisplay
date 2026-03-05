@@ -1,4 +1,4 @@
-import { FC, ElementType, createElement } from "react";
+import * as React from "react";
 import { useState } from "react";
 import {
   ArrowLeft,
@@ -68,7 +68,7 @@ const WarrantyLookupPage = ({
     isActive: boolean,
     daysRemaining?: number,
   ): {
-    icon: ElementType;
+    icon: React.ElementType;
     color: string;
     bgColor: string;
     borderColor: string;
@@ -299,9 +299,9 @@ const WarrantyLookupPage = ({
   return (
     <div
       className="min-h-screen text-gray-900 p-8"
-      style={{'{{' }}
+      style={{
         backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`,
-      {{ '}}'}}
+      }}
     >
       {/* Header */}
       <div className="max-w-6xl mx-auto mb-8">
@@ -441,7 +441,7 @@ const WarrantyLookupPage = ({
                         <div
                           className={`${statusInfo.bgColor} ${statusInfo.borderColor} ${statusInfo.color} px-6 py-3 rounded-xl border-2 flex items-center gap-2 font-bold shadow-lg`}
                         >
-                          {createElement(statusInfo.icon, {
+                          {React.createElement(statusInfo.icon, {
                             className: "w-5 h-5",
                           })}
                           {statusInfo.text}

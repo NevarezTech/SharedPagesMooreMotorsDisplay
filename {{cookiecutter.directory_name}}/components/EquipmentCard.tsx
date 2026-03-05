@@ -1,5 +1,5 @@
-import { FC, SyntheticEvent } from "react";
-import { CheckCircle, XCircle } from "lucide-react";
+import * as React from "react";
+
 import type { QuizRecommendation } from "../types/quiz";
 
 interface EquipmentCardProps {
@@ -10,7 +10,7 @@ interface EquipmentCardProps {
   accentColorDark?: string;
 }
 
-const EquipmentCard: FC<EquipmentCardProps> = ({
+const EquipmentCard: React.FC<EquipmentCardProps> = ({
   equipment,
   onClick,
   accentColor = "text-green-600",
@@ -39,8 +39,8 @@ const EquipmentCard: FC<EquipmentCardProps> = ({
           <img
             src={equipment.image_url}
             alt={equipment.model}
-            className="w-full h-full object-cover"
-            onError={(e: SyntheticEvent<HTMLImageElement, Event>) => {
+            className="w-full h-full object-contain"
+            onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
               const target = e.currentTarget;
               target.style.display = "none";
               if (target.parentElement) {
@@ -60,16 +60,29 @@ const EquipmentCard: FC<EquipmentCardProps> = ({
           <div className="flex-1">
             <h4 className="text-xl font-bold text-gray-800 mb-1">
               {equipment.brand} {equipment.model}
+              {equipment.series && (
+                <span className="text-base font-normal text-gray-600 ml-2">
+                  ({equipment.series})
+                </span>
+              )}
             </h4>
             {equipment.year > 0 && (
               <p className="text-gray-600 text-sm">Year: {equipment.year}</p>
             )}
           </div>
           <div className="flex items-center">
-            {equipment.is_available ? (
-              <CheckCircle className="text-green-500" size={20} />
+            {!equipment.is_available ? (
+              <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full font-medium">
+                Unavailable
+              </span>
+            ) : equipment.quantity === 0 ? (
+              <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full font-medium">
+                Out of Stock
+              </span>
             ) : (
-              <XCircle className="text-red-500" size={20} />
+              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">
+                In Stock
+              </span>
             )}
           </div>
         </div>
@@ -99,8 +112,20 @@ const EquipmentCard: FC<EquipmentCardProps> = ({
             </div>
           </div>
           {equipment.is_available && equipment.show_public_quantity && (
-            <div className="text-xs text-gray-500">
-              {equipment.quantity} available
+            <div className="text-xs text-gray-600 font-medium">
+              {equipment.quantity === 0 ? (
+                <span className="text-orange-600">Out of Stock</span>
+              ) : (
+                <span>
+                  {equipment.quantity}{" "}
+                  {equipment.quantity === 1 ? "unit" : "units"} available
+                </span>
+              )}
+            </div>
+          )}
+          {!equipment.is_available && (
+            <div className="text-xs text-red-600 font-medium">
+              Currently Unavailable
             </div>
           )}
         </div>

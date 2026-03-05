@@ -16,11 +16,11 @@ interface KioskHomeProps {
   brandConfig: KioskBrandConfig;
   onQuestionnaire: () => void;
   onInventory?: () => void;
-  onWarrantyLookup: () => void;
+  onWarrantyLookup?: () => void;
 }
 
 interface KioskButtonProps {
-  icon: any;
+  icon: React.ReactNode;
   title: string;
   description: string;
   onClick: () => void;
@@ -103,9 +103,9 @@ const KioskButton = ({
         text-center space-y-5
         ${className}
       `}
-      style={{'{{' }}
+      style={{
         borderColor: undefined,
-      {{ '}}'}}
+      }}
       onMouseEnter={(e) => {
         e.currentTarget.style.borderColor = primaryColorHex;
         e.currentTarget.style.borderWidth = "3px";
@@ -118,18 +118,18 @@ const KioskButton = ({
       {/* Animated gradient overlay on hover */}
       <div
         className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300 rounded-3xl pointer-events-none"
-        style={{'{{' }}
+        style={{
           background: `linear-gradient(135deg, ${primaryColorLightHex}, ${primaryColorHex}20)`,
-        {{ '}}'}}
+        }}
       />
 
       {/* Icon container with background circle */}
       <div
         className="relative z-10 p-4 rounded-full transition-all duration-300 group-hover:scale-110"
-        style={{'{{' }}
+        style={{
           backgroundColor: `${primaryColorHex}15`,
           color: primaryColorHex,
-        {{ '}}'}}
+        }}
       >
         {icon}
       </div>
@@ -138,13 +138,13 @@ const KioskButton = ({
       <div className="relative z-10">
         <h2
           className="text-2xl font-bold mb-2 transition-colors duration-300"
-          style={{'{{' }} color: "#1f2937" {{ '}}'}}
+          style={{ color: "#1f2937" }}
         >
           {title}
         </h2>
         <p
           className="text-base leading-relaxed px-2"
-          style={{'{{' }} color: "#6b7280" {{ '}}'}}
+          style={{ color: "#6b7280" }}
         >
           {description}
         </p>
@@ -153,7 +153,7 @@ const KioskButton = ({
       {/* Bottom accent line */}
       <div
         className="absolute bottom-0 left-0 right-0 h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 rounded-b-3xl"
-        style={{'{{' }} backgroundColor: primaryColorHex {{ '}}'}}
+        style={{ backgroundColor: primaryColorHex }}
       />
     </button>
   );
@@ -182,9 +182,9 @@ const KioskHome = ({
   return (
     <div
       className="min-h-screen bg-gradient-to-br p-8"
-      style={{'{{' }}
+      style={{
         backgroundImage: `linear-gradient(to bottom right, ${gradientFromHex}, ${gradientToHex})`,
-      {{ '}}'}}
+      }}
     >
       <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -218,14 +218,16 @@ const KioskHome = ({
             primaryColorLightHex={primaryColorLightHex}
           />
 
-          <KioskButton
-            icon={<Shield size={64} strokeWidth={1.5} />}
-            title="Warranty Lookup"
-            description="Check warranty status and coverage information"
-            onClick={onWarrantyLookup}
-            primaryColorHex={primaryColorHex}
-            primaryColorLightHex={primaryColorLightHex}
-          />
+          {onWarrantyLookup && (
+            <KioskButton
+              icon={<Shield size={64} strokeWidth={1.5} />}
+              title="Warranty Lookup"
+              description="Check warranty status and coverage information"
+              onClick={onWarrantyLookup}
+              primaryColorHex={primaryColorHex}
+              primaryColorLightHex={primaryColorLightHex}
+            />
+          )}
 
           <KioskButton
             icon={<ExternalLink size={64} strokeWidth={1.5} />}

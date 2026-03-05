@@ -29,8 +29,8 @@ export { fetchQuizRecommendations, validateQuizAnswers } from "./api/quizApi";
 export { useQuizLogic } from "./hooks/useQuizLogic";
 
 // Components
-export { default as EquipmentModal } from "./components/EquipmentModal";
-export { default as EquipmentModalDialog } from "./components/EquipmentModalDialog";
+export { EquipmentModal } from "./components/EquipmentModal";
+
 export { default as ProgressBar } from "./components/ProgressBar";
 export { default as QuestionCard } from "./components/QuestionCard";
 export { default as CustomLandSizeInput } from "./components/CustomLandSizeInput";
@@ -43,6 +43,7 @@ export { default as PaymentModal } from "./components/PaymentModal";
 export { default as PaymentPage } from "./components/PaymentPage";
 export { default as PaymentMethodSelector } from "./components/PaymentMethodSelector";
 export { default as PaymentSummary } from "./components/PaymentSummary";
+export { default as MowerTypeInfoButton } from "./components/MowerTypeInfo";
 
 // Payment API
 export { paymentApi } from "./api/paymentApi";
